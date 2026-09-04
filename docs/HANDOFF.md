@@ -1,94 +1,110 @@
-# ChatGPT → Codex CLI Handoff
+# ChatGPT → Codex CLI 交接
 
-## Status at handoff
-Date: 2026-09-04
-Repository: `lumm256/shared-multiverse` (private, created by user)
-Local environment: macOS 12; Codex CLI installed and working. User showed Codex CLI v0.153.2 using `gpt-5.6-sol high` at the time of handoff.
+更新时间：2026-09-04
 
-No production code has been implemented yet in this handoff package. The work so far is product/architecture design and competitor analysis.
+GitHub 仓库：`lumm256/shared-multiverse`（Private）。
 
-## Why this handoff exists
-ChatGPT's connected GitHub interface could not see/write the newly created private repository in this setup, while Codex CLI can work directly against the user's local clone. The repository should become the durable source of truth so progress does not depend on chat history.
+用户在 macOS 12 上已经成功安装 Codex CLI，后续代码开发转移到本地 CLI。本仓库文档是项目长期上下文，不依赖原 ChatGPT 会话。
 
-## Decisions already made — do not reopen without a reason
-1. Product is a **Shared Multiverse**, not a generic AI video generator.
-2. First implemented World is **Titanic**.
-3. World definition uses EventTemplates; runtime uses StoryNodes.
-4. WorldState is explicit and drives consequences.
-5. StoryNode/VideoAsset can be shared; Timeline is the branch/path.
-6. Timeline fork never mutates the source timeline.
-7. Narrative Engine is the Game Master; video model is the Renderer.
-8. MVP starts without real video so the state/action loop can be validated cheaply.
-9. Use a modular monolith (Next.js/TypeScript + PostgreSQL), not microservices.
-10. Vercel is the default app deployment; Cloudflare R2 for media/object storage.
-11. Credits are the primary future usage abstraction; subscription layers on later.
-12. Cache check happens before credit charge.
-13. Anonymous timelines must be claimable by a future user account.
-14. Real secrets never enter Git.
-15. English brand/domain are not finalized. `shared-multiverse` is a code/repo name.
+## 已确定的决策
 
-## Recommended first coding task
-Read all docs, inspect current repository, then implement M1 from `docs/MVP.md`.
+- 中文工作名：造梦空间。
+- 英文工作名：Shared Multiverse，最终品牌尚未锁定。
+- 不是 AI Video Generator，也不是纯 branching story。
+- 核心：Shared World + World State + Story Graph + Timeline/Fork + AI Video Rendering。
+- 所有玩家共同探索同一个 World；每个人拥有 Timeline；Story Graph 共享。
+- StoryNode ≈ Commit；Timeline ≈ Branch；World ≈ Repository。
+- Narrative Engine = Game Master；Video Model = Renderer。
+- LLM 受 Rules/State 约束。
+- StoryNode / VideoAsset 可跨 Timeline 复用。
+- Cache Check 在 Credits 扣费之前。
+- 商业化核心：已有宇宙尽量免费，创造未探索宇宙消耗 Credits。
+- MVP 使用 Vercel + Cloudflare R2 + PostgreSQL，保持单体。
+- 首批 World 候选 Titanic / Zombie Apocalypse / Trolley Problem；当前只实现 Titanic。
 
-Suggested initial structure (adapt if existing scaffold requires it):
+## 竞品研究后的战略修正
+
+已经确认 Branches、ManyVerse、AI-FMV、NEXZONES、Yoroll、Reverie、Branch 等方向存在。
+
+因此必须坚持：
+
+> **World Simulation + Shared Story Graph + Timeline/Fork + AI Video Rendering + Community Exploration**
+
+`Shared` 是核心关键词。
+
+## Codex 下一步
+
+先阅读 `AGENTS.md` 和全部 `docs/*.md`，检查仓库实际代码后实现 Milestone 1：
+
+```text
+用户进入 Titanic
+→ 匿名 Timeline
+→ 初始 StoryNode
+→ Action
+→ State Transition
+→ 新 StoryNode
+→ Timeline HEAD 前进
+→ 连续至少 3 次
+```
+
+至少测试：
+
+1. 初始 State 正确。
+2. Action 能改变 State。
+3. 不同 State 有不同后果。
+4. Timeline depth/head 正确推进。
+5. 原 StoryNode 不被修改。
+6. Custom Action 入口存在，可先 rule-based/mock。
+7. Domain 不依赖 UI。
+
+## 当前不要做
+
+H3 Max 真调用、Stripe、完整登录、Creator Marketplace、社区 Feed、复杂后台、微服务、Redis Cluster、Kafka、多 World。
+
+## 推荐目录
 
 ```text
 src/
-  domain/
-    world/
-    world-state/
-    story-node/
-    timeline/
-    narrative/
-    generation/
-    billing/
-  worlds/
-    titanic/
+├── domain/
+│   ├── world/
+│   ├── world-state/
+│   ├── story-node/
+│   ├── timeline/
+│   ├── narrative/
+│   ├── generation/
+│   └── billing/
+└── worlds/
+    └── titanic/
+        ├── world.ts
+        ├── state.ts
+        ├── events.ts
+        ├── actions.ts
+        └── rules.ts
 ```
 
-Suggested first concrete modules:
-- world/domain types
-- timeline/domain types
-- StoryNode types
-- WorldState generic types
-- NarrativeEngine/NarrativeProvider boundary
-- TitanicWorldState
-- Titanic initial state
-- Titanic EventTemplates/actions/rules
-- state transition service
-- tests for state transitions
+允许 Codex 根据实际 Next.js 项目结构小幅调整。
 
-Then create the simplest UI/API needed to play 3 turns.
+## Secret 交接
 
-## What “done” means for M1
-A fresh anonymous visitor can:
-1. enter Titanic;
-2. receive initial narrative/state summary;
-3. choose an action;
-4. server evaluates rules and updates state;
-5. receive a new StoryNode;
-6. repeat at least three times;
-7. refresh/resume the Timeline;
-8. tests demonstrate state transitions and timeline invariants.
+真实凭证不进入文档和 Git。
 
-No real video is required for M1.
+仓库提交 `.env.example`；用户在本地 `.env.local` 填写 LLM、fal.ai、数据库、R2、未来 Stripe 等 Key。
 
-## Environment/secrets
-Copy `.env.example` to `.env.local` locally. User will fill credentials there. Never ask the user to paste secrets into source code or commit them.
+如果缺变量，Codex 应更新 `.env.example`，而不是要求提交 Secret。
 
-Expected future categories include database, LLM provider, fal/video provider, Cloudflare R2, auth and Stripe. Only require keys when the milestone actually uses them.
-
-## Suggested Codex kickoff prompt
+## 推荐 Codex 首条 Prompt
 
 ```text
-Read AGENTS.md and every document under docs/ before making changes.
-Treat those files as the project's current source of truth.
-Inspect the repository and existing code first.
-Then implement Milestone 1 from docs/MVP.md: the Titanic text/state vertical slice.
-Do not integrate real video generation yet.
-Keep the architecture provider-agnostic and billing-ready as described in docs/ARCHITECTURE.md.
-Run tests and the app locally, fix failures, and summarize the implementation and any architectural decisions you had to make.
+请先阅读仓库根目录 AGENTS.md 以及 docs/ 下的全部文档，把它们视为当前项目的事实来源和架构约束。
+
+在修改代码前先检查仓库现状，然后实现 docs/MVP.md 中的 Milestone 1：Titanic 的纯文本 / World State vertical slice。
+
+当前不要接真实视频生成，也不要实现支付。
+
+核心目标是跑通：
+Action → World Rules → World State → Consequence → StoryNode → Timeline HEAD。
+
+请保持领域逻辑与 UI、LLM Provider、Video Provider 解耦。完成后运行测试和应用，修复错误，并总结修改文件、测试结果以及不得不做的架构决定。
 ```
 
-## Future collaboration
-After Codex commits/pushes milestones, the user can return to ChatGPT for product/architecture/competitor review. Update these docs whenever decisions change so both environments stay synchronized.
+长期建议：ChatGPT 负责产品/竞品/商业/架构讨论；Codex CLI 负责编码、测试、migration、refactor、commit；重要结论持续写回 Git 文档。

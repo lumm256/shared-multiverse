@@ -1,9 +1,13 @@
-# Documentation Index
+# 文档索引
 
-1. `../AGENTS.md` — AI agent project constitution / mandatory read.
-2. `PRODUCT.md` — what the product is and is not.
-3. `ARCHITECTURE.md` — domain and deployment architecture.
-4. `MVP.md` — Titanic vertical slice and milestone sequence.
-5. `COMPETITORS.md` — competitive conclusions and differentiation.
-6. `MONETIZATION.md` — credits, subscriptions and creator economy direction.
-7. `HANDOFF.md` — current project status and Codex CLI kickoff instructions.
+建议开发者和 Codex 按以下顺序阅读：
+
+1. `../AGENTS.md` — 项目最高优先级开发约定
+2. `PRODUCT.md` — 产品是什么
+3. `ARCHITECTURE.md` — 核心领域模型与技术架构
+4. `MVP.md` — Titanic 第一版做什么
+5. `COMPETITORS.md` — 竞品与差异化
+6. `MONETIZATION.md` — Credits / 订阅 / 商业化
+7. `HANDOFF.md` — 当前开发进度与交接状态
+
+技术名词、TypeScript 字段名、Provider 名称等保留英文，以避免开发时产生歧义。

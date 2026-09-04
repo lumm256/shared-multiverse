@@ -1,47 +1,53 @@
-# Competitive Landscape & Differentiation
+# 竞品与差异化
 
-This document records the strategic conclusions from the September 2026 competitor review. URLs and product details should be re-verified before external/public use because competitors change quickly.
+## 结论
 
-## Direct/adjacent products identified
-- **Branches: Stories Never End** — consumer AI cinematic episodes with choices, branching paths, alternate realities and endings. Direct threat to the simple “AI video + choice + ending” concept.
-- **ManyVerse** — AI video branching-story/game creation; world/characters/tone/choices → scenes/outcomes/playable experience. Shows that “AI automatically creates interactive video games” is not enough differentiation.
-- **AI-FMV** — interactive AI video storytelling where players can also create.
-- **NEXZONES** — interactive video creation with story/image/interaction/logic/AI; closer to a creator/studio tool and uses world-oriented language.
-- **Yoroll.ai** — AI-native interactive video-game direction; long-term threat from generative game engines.
-- **Branchframe** — AI/FMV creator-tool adjacency.
-- **Reverie** — text/roleplay product with explicit timeline forks; “version control for stories” is conceptually close to our Git analogy.
-- **Branch (readbranch)** — AI text story tree with sharing/friends forging paths; notably described reuse when someone already explored a branch, conceptually close to shared graph/cache reuse.
-- **PixVerse Game Engine / interactive generative-video research** — external signal that video generation + game/world state/orchestration is becoming a broader technical direction.
+赛道已经存在 AI 视频分支剧情、AI 互动视频、AI 原生视频游戏、Timeline/Fork 故事和多人共享分支故事。
 
-## Strategic conclusion
-Do **not** build only:
-1. AI video + branching choices;
-2. AI-generated interactive video game;
-3. another creator tool for branching videos.
+因此：
 
-Those spaces already have meaningful competition.
+> **如果只是“AI 视频 + 选择剧情”，不值得继续。**
 
-## Defensible product direction to test
-**World Simulation + Shared Story Graph + Timeline/Fork + AI Video Rendering + Community Exploration**.
+项目必须坚持：
 
-The differentiator is **Shared**:
-- all players explore the same World;
-- the Story Graph grows across players;
-- each person follows/owns a Timeline;
-- existing explored possibilities can be reused instantly;
-- unexplored possibilities require creation/generation;
-- users can discover and fork other people's timelines.
+> **World Simulation + Shared Story Graph + Timeline/Fork + AI Video Rendering + Community Exploration**
 
-## Important product consequence
-Cache should be visible conceptually as “this universe has already been explored,” not merely hidden infrastructure. This aligns technical cost, game mechanics and monetization.
+## 已研究的重点竞品
 
-## World State differentiation
-Prefer:
+- **Branches**：C 端 AI 互动影视；如果我们只是“视频→选择→视频→结局”，差异不足。
+- **ManyVerse**：World/Characters/Tone/Choices → AI scenes/outcomes，说明“AI 自动生成互动视频故事”也不是独特卖点。
+- **AI-FMV**：强调 interactive AI video storytelling 和 player as creator。
+- **NEXZONES**：强调 World、Interaction、Logic、State、AI，更偏 Creator/Studio。
+- **Yoroll.ai**：AI-native interactive video game，长期是重要竞争方向。
+- **Reverie**：文字为主，但 Timeline/Fork 和 “version control for stories” 与我们的 Git 思想高度接近。
+- **Branch**：文字 AI Story，支持共享 branching tree、多人探索和已探索分支即时复用，对 Shared Story Graph 的概念威胁较强。
 
-`User Action → World Rules → World State → Narrative Engine → StoryNode → Video`
+## 必须坚持的差异
 
-over:
+### Shared Multiverse
+所有用户探索同一个 World，共享 Story Graph，但拥有各自 Timeline。
 
-`Choice → hardcoded next node/video`.
+### World State
+不是 `Choice → Node`，而是：
 
-This moves the product toward an AI world simulator rather than an AI interactive short drama.
+```text
+Action → Rules → State → Consequence → StoryNode
+```
+
+### Cache = 世界历史
+Cache Hit 不只是省钱，而意味着“这个宇宙已经有人探索过”。
+
+未来可展示：
+
+```text
+向左急转     12,381 timelines → 已探索
+全速倒车      4,281 timelines → 已探索
+尝试撞碎冰山  UNEXPLORED      → Create this universe
+```
+
+### Video = Renderer
+世界逻辑与视频供应商解耦。
+
+竞争定位不应是 AI Video Generator / Branching Video Tool，而应更接近：
+
+> **Shared AI Multiverse / World Simulation Platform**

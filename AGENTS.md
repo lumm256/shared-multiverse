@@ -1,60 +1,64 @@
-# Shared Multiverse — Agent Instructions
+# AGENTS.md — Shared Multiverse 开发约定
 
-## Read first
-Before changing code, read every document under `docs/`, especially `HANDOFF.md`, `PRODUCT.md`, `ARCHITECTURE.md`, and `MVP.md`.
+项目中文工作名：**造梦空间**；英文工作名/仓库名：**Shared Multiverse**。
 
-## Product invariant
-Shared Multiverse is **not** a generic AI video generator and **not** a conventional branching-story generator. It is a shared, persistent possibility space:
+本项目不是普通 AI 视频生成器，也不是预先写死节点的互动短剧，而是：
 
-- many users explore the same `World`;
-- user actions alter explicit `WorldState` under `WorldRules`;
-- the Narrative Engine interprets consequences and creates `StoryNode`s;
-- each user's path is a `Timeline` (Git branch analogy);
-- timelines can fork from any existing node without mutating the original timeline;
-- multiple timelines may reuse the same StoryNode / VideoAsset when the normalized state and rendering context are equivalent;
-- video is a renderer/window into world state, not the story engine.
+> **基于 Git 分支理念的多人共享 AI 交互视频多元宇宙。**
 
-Working product definition:
-> A shared AI multiverse where every choice can fork reality.
+核心理念：
 
-Chinese project name: **造梦空间**. English brand is intentionally **not finalized**. Repository/code name: `shared-multiverse`.
+> **规则决定这个世界是什么，用户决定世界往哪里走，AI 决定你不知道会发生什么。**
 
-## Core philosophy
-> 规则决定这个世界是什么，用户决定世界往哪里走，AI 决定你不知道会发生什么。
+## 开发前必须理解
 
-## Git mental model
-- Repository → World
-- Commit → StoryNode
-- Commit tree → Story Graph
-- Branch → Timeline
-- HEAD → Timeline.headNodeId
-- Parent commit → StoryNode.parentNodeId
-- Fork → new Timeline from an existing node
-- Artifact/blob → VideoAsset
-- Commit state → WorldState
+- `World` ≈ Git Repository：定义规则、变量、角色、地点和 EventTemplate。
+- `StoryNode` ≈ Git Commit：某条世界线上实际发生的一次状态变化。
+- `Timeline` ≈ Git Branch：用户正在探索的一条世界线。
+- `headNodeId` ≈ HEAD。
+- Fork 从已有 StoryNode 创建新 Timeline，绝不能改写原 Timeline 历史。
+- StoryNode 和 VideoAsset 不天然属于某个用户，可被多个 Timeline 复用。
+- Narrative Engine 是 Game Master；视频模型只是 Renderer。
+- LLM 必须受 World Rules 与 World State 约束。
+- Cache Check 必须发生在未来 Credits 扣费之前。
 
-## Architecture rules
-1. `StoryNode` is not owned by a user or timeline; nodes/assets may be shared.
-2. `Timeline` owns a path/head and may belong to an anonymous session or future user.
-3. World definitions are configuration-driven; adding a world should not require Narrative Engine rewrites.
-4. LLMs must operate inside explicit rules/state. Do not let the model freely rewrite reality.
-5. Check generation cache **before** charging credits.
-6. Do not scatter plan checks such as `user.isPro`; use authorization/entitlements.
-7. Do not hardcode a single LLM/video provider. Use provider adapters.
-8. Never commit real secrets. `.env.example` is committed; `.env.local` is local only.
-9. Start as a modular monolith. Do not introduce microservices for the MVP.
-10. Preserve incomplete information in the UI; do not expose every internal probability/state variable.
+核心链路：
 
-## Current development priority
-Implement **Titanic Vertical Slice / Milestone 1** before real video generation:
+```text
+User Action
+→ World Rules / Validation
+→ World State
+→ Narrative Engine
+→ Consequence
+→ StoryNode
+→ optional Video Rendering
+→ Timeline HEAD
+```
 
-`enter Titanic → anonymous timeline → StoryNode → action/custom action → rule/state evaluation → consequence → next StoryNode`, repeat for at least 3 interventions.
+## 当前唯一开发重点
 
-The core loop must work without H3 Max first. After that, integrate video rendering and caching.
+实现 **Titanic Milestone 1**，先不要接真实视频：
 
-## Development behavior
-- Prefer TypeScript and small domain modules.
-- Add tests for deterministic state transitions and invariants.
-- Keep interfaces/provider boundaries explicit.
-- When a product decision is ambiguous, consult docs instead of inventing a new product direction.
-- If changing an architectural invariant, update docs in the same commit and explain why.
+```text
+进入 Titanic
+→ 匿名 Timeline
+→ 初始 StoryNode
+→ Action / Custom Action
+→ State Transition
+→ 新 StoryNode
+→ Timeline HEAD 前进
+→ 至少连续 3 次
+```
+
+## 技术原则
+
+- TypeScript + Next.js / React。
+- PostgreSQL。
+- MVP 保持单体，不提前拆微服务。
+- LLM / Video Model 使用 Provider Adapter 解耦。
+- 视频生成按异步任务建模。
+- 不要散落 `plan === "pro"` 判断，未来使用 Authorization / Entitlement。
+- 模型、分辨率、时长使用 GenerationProfile，不硬编码进 World。
+- 禁止提交真实 `.env` / `.env.local`。
+
+修改 World / StoryNode / Timeline / WorldState / Cache 的语义前，必须先阅读 `docs/ARCHITECTURE.md`，并记录重大设计变化。
